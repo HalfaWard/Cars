@@ -287,6 +287,15 @@
             return rectangles;
         }
 
+        public bool IntersectRectangles(StageObject target, Func<StageObject, StageObject, bool> collisionChecker)
+        {
+            if (Rectangle().Intersects(target.Rectangle()))
+            {
+                return collisionChecker(this, target);
+            }
+            return false;
+        }
+
         /// <summary>
         /// Returns a dictionary with a hitbox named "default", based on the texture size
         /// </summary>

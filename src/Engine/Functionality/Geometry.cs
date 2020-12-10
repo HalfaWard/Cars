@@ -302,6 +302,27 @@
             return radians;
         }
 
+        public static Point[] GetRotatedRectangle(Vector2 rotationPoint, Rectangle rect, float angleRad)
+        {
+            var p1 = new Vector2(rect.Left, rect.Top);
+            var p2 = new Vector2(rect.Left, rect.Bottom);
+            var p3 = new Vector2(rect.Right, rect.Top);
+            var p4 = new Vector2(rect.Right, rect.Bottom);
+
+            var newP1 = rotationPoint + AngleToVector(AngleOfVector(p1 - rotationPoint) + angleRad, (p1 - rotationPoint).Length());
+            var newP2 = rotationPoint + AngleToVector(AngleOfVector(p2 - rotationPoint) + angleRad, (p2 - rotationPoint).Length());
+            var newP3 = rotationPoint + AngleToVector(AngleOfVector(p3 - rotationPoint) + angleRad, (p3 - rotationPoint).Length());
+            var newP4 = rotationPoint + AngleToVector(AngleOfVector(p4 - rotationPoint) + angleRad, (p4 - rotationPoint).Length());
+
+            return new Point[]
+            {
+                newP1.ToPoint(),
+                newP2.ToPoint(),
+                newP3.ToPoint(),
+                newP4.ToPoint()
+            }
+        }
+
         /// <summary>
         /// Converts a radian angle to a vector
         /// </summary>

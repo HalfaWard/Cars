@@ -173,7 +173,7 @@
         /// <param name="targetHitbox">The targetHitbox<see cref="string"/></param>
         /// <param name="onlyIfMoving">The onlyIfMoving<see cref="bool"/></param>
         /// <param name="collisionChecker">The collisionChecker<see cref="Action{string, string, string, string}"/></param>
-        public void AddCollisionHandler(string objectListName, string targetListName, string objectHitbox = "", string targetHitbox = "", bool onlyIfMoving = false, Action<string, string, string, string> collisionChecker = null)
+        public void AddCollisionHandler(string objectListName, string targetListName, string objectHitbox = "", string targetHitbox = "", bool onlyIfMoving = false, Func<StageObject, StageObject, bool> collisionChecker = null)
         {
             collisionHandlers.Add(new CollisionHandler(objectListName, objectHitbox, targetListName, targetHitbox, objectLists, onlyIfMoving, collisionChecker));
         }
@@ -310,7 +310,7 @@
             /// <summary>
             /// Defines the collisionChecker
             /// </summary>
-            private readonly Action<string, string, string, string> collisionChecker;
+            private readonly Func<StageObject, StageObject, bool> collisionChecker;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="CollisionHandler"/> class.
@@ -322,7 +322,7 @@
             /// <param name="objectLists">The objectLists<see cref="Dictionary{string, List{StageObject}}"/></param>
             /// <param name="onlyIfMoving">The onlyIfMoving<see cref="bool"/></param>
             /// <param name="collisionChecker">The collisionChecker<see cref="Action{string, string, string, string}"/></param>
-            public CollisionHandler(string objects, string hitbox, string targets, string targetHitbox, Dictionary<string, List<StageObject>> objectLists, bool onlyIfMoving, Action<string, string, string, string> collisionChecker)
+            public CollisionHandler(string objects, string hitbox, string targets, string targetHitbox, Dictionary<string, List<StageObject>> objectLists, bool onlyIfMoving, Func<StageObject, StageObject, bool> collisionChecker)
             {
                 objectsToCheck = objects;
                 objectHitbox = hitbox;
@@ -338,78 +338,84 @@
             /// </summary>
             public void CheckCollision()
             {
-                if (collisionChecker != null)
+                
+                if (!objectLists.ContainsKey(objectsToCheck) || !objectLists.ContainsKey(collisionTargets))
                 {
-                    collisionChecker(objectsToCheck, objectHitbox, collisionTargets, targetHitbox);
+                    return;
                 }
-                else
-                {
-                    if (!objectLists.ContainsKey(objectsToCheck) || !objectLists.ContainsKey(collisionTargets))
-                    {
-                        return;
-                    }
 
-                    List<StageObject> o = objectLists[objectsToCheck];
-                    List<StageObject> t = objectLists[collisionTargets];
-                    for (int i = 0; i < o.Count;)
+                List<StageObject> o = objectLists[objectsToCheck];
+                List<StageObject> t = objectLists[collisionTargets];
+                for (int i = 0; i < o.Count;)
+                {
+                    if (!o[i].IsAlive)
                     {
-                        if (!o[i].IsAlive)
+                        o.RemoveAt(i);
+                        continue;
+                    }
+                    for (int j = 0; j < t.Count;)
+                    {
+                        if (o[i] == t[j])
                         {
-                            o.RemoveAt(i);
+                            j++;
                             continue;
                         }
-                        for (int j = 0; j < t.Count;)
+                        if (!t[j].IsAlive)
                         {
-                            if (o[i] == t[j])
-                            {
-                                j++;
-                                continue;
-                            }
-                            if (!t[j].IsAlive)
-                            {
-                                t.RemoveAt(j);
-                                continue;
-                            }
-                            List<Rectangle> rectangles = o[i].IntersectRectangles(t[j], objectHitbox, targetHitbox);
-                            if (rectangles.Count > 0)
-                            {
-                                //TODO
-                                o[i].OnCollison(t[j], rectangles, objectHitbox, targetHitbox);
-                                o[i].isColliding = true;
-                                t[j].isColliding = true;
-                            }
-                            else
-                            {
-                                if (o[i].isColliding)
-                                {
-                                    //o[i].OnLeaveCollision();
-                                }
-                                o[i].isColliding = false;
-                            }
-                            if (!t[j].IsAlive)
-                            {
-                                t.RemoveAt(j);
-                            }
-                            else
-                            {
-                                j++;
-                            }
-
-                            if (!o[i].IsAlive)
-                            {
-                                break;
-                            }
+                            t.RemoveAt(j);
+                            continue;
                         }
-                        if (!o[i].IsAlive)
+
+                        bool collided = false;
+                        List<Rectangle> rectangles = null;
+                        if (collisionChecker != null)
                         {
-                            o.RemoveAt(i);
+                            collided = collisionChecker(o[i], t[j]);
                         }
                         else
                         {
-                            i++;
+                            rectangles = o[i].IntersectRectangles(t[j], objectHitbox, targetHitbox);
+                            collided = rectangles.Count > 0;
+                        }
+                        if (collided)
+                        {
+                            //TODO
+                            o[i].OnCollison(t[j], rectangles, objectHitbox, targetHitbox);
+                            o[i].isColliding = true;
+                            t[j].isColliding = true;
+                        }
+                        else
+                        {
+                            if (o[i].isColliding)
+                            {
+                                //o[i].OnLeaveCollision();
+                            }
+                            o[i].isColliding = false;
+                        }
+                        if (!t[j].IsAlive)
+                        {
+                            t.RemoveAt(j);
+                        }
+                        else
+                        {
+                            j++;
+                        }
+
+                        if (!o[i].IsAlive)
+                        {
+                            break;
                         }
                     }
+                    if (!o[i].IsAlive)
+                    {
+                        o.RemoveAt(i);
+                    }
+                    else
+                    {
+                        i++;
+                    }
                 }
+                
             }
 
             /// <summary>
