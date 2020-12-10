@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "src\Game\Game.csproj", "{10C735C6-4E02-4614-8806-7EA92B311404}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "src\Engine\Engine.csproj", "{6D720C25-6DDC-4627-A4F8-2E736C1B58B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10C735C6-4E02-4614-8806-7EA92B311404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C735C6-4E02-4614-8806-7EA92B311404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C735C6-4E02-4614-8806-7EA92B311404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10C735C6-4E02-4614-8806-7EA92B311404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D720C25-6DDC-4627-A4F8-2E736C1B58B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D720C25-6DDC-4627-A4F8-2E736C1B58B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D720C25-6DDC-4627-A4F8-2E736C1B58B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D720C25-6DDC-4627-A4F8-2E736C1B58B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
