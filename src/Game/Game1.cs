@@ -18,7 +18,7 @@ namespace Game
         public SpriteBatch StaticSpriteBatch { get; private set; }
         public RenderTarget2D RenderTarget { get; set; }
         public GameTimeHolder GameTimeHolder { get; private set; }
-        public KeyBuffer Keybuffer { get; private set; }
+        public static KeyBuffer KeyBuffer { get; private set; }
         public Matrix Transform { get; set; }
         public bool HasTransform { get; set; } = false;
 
@@ -28,19 +28,26 @@ namespace Game
         {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            //IsMouseVisible = true;
+            KeyBuffer = new KeyBuffer(false, 10);
         }
 
         protected override void Initialize()
         {
             Instance = this;
-
+            KeyBuffer.SetKeybinds(".\\Keybindings.txt", keybindType.KeyboardBind);
             stateManager = new GameStateManager();
             stateManager.SetContentManager(Content);
+            UpdateScreenResolution();
             RenderTarget = new RenderTarget2D(GraphicsDevice, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
-            Keybuffer = new KeyBuffer(false, 10);
 
             base.Initialize();
+        }
+
+        private void UpdateScreenResolution()
+        {
+            Graphics.PreferredBackBufferHeight = 1000;
+            Graphics.PreferredBackBufferWidth = 1000;
+            Graphics.ApplyChanges();
         }
 
         protected override void LoadContent()
@@ -59,7 +66,7 @@ namespace Game
                 GameTimeHolder.GameTime = gameTime;
 
             var keyState = Keyboard.GetState();
-            Keybuffer.RegisterKeyPressed(keyState, gameTime);
+            KeyBuffer.RegisterKeyPressed(keyState, gameTime);
 
             stateManager.Update(GameTimeHolder);
 

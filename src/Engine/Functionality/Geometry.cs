@@ -320,7 +320,7 @@
                 newP2.ToPoint(),
                 newP3.ToPoint(),
                 newP4.ToPoint()
-            }
+            };
         }
 
         /// <summary>
