@@ -12,7 +12,7 @@
         /// <summary>
         /// creates an instance of the GameTimeHolder object, for easier use in differenct classes
         /// </summary>
-        public static GameTimeHolder instance;
+        public static GameTimeHolder Instance;
 
         /// <summary>
         /// The list of every timer with the given name
@@ -45,12 +45,12 @@
         /// <returns>The <see cref="GameTimeHolder"/></returns>
         public static GameTimeHolder Initialize(GameTime gameTime)
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = new GameTimeHolder(gameTime);
+                Instance = new GameTimeHolder(gameTime);
             }
 
-            return instance;
+            return Instance;
         }
 
         /// <summary>
