@@ -1,6 +1,7 @@
 ﻿using Engine.Functionality;
 using Engine.GameStates;
 using Engine.Input;
+using Game.Track;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -37,6 +38,7 @@ namespace Game
             stateManager = new GameStateManager();
             stateManager.SetContentManager(Content);
             RenderTarget = new RenderTarget2D(GraphicsDevice, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
+            Keybuffer = new KeyBuffer(false, 10);
 
             base.Initialize();
         }
@@ -46,7 +48,7 @@ namespace Game
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             StaticSpriteBatch = new SpriteBatch(GraphicsDevice);
             stateManager.SetSpriteBatches(SpriteBatch, StaticSpriteBatch);
-            //stateManager.AddState(new TrackState(MenuState.ActiveMenu.Main)); Create new state
+            stateManager.AddState(new TrackState()); //Create new state
         }
 
         protected override void Update(GameTime gameTime)
