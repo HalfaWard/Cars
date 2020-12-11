@@ -302,6 +302,97 @@
             return radians;
         }
 
+        public bool CheckIfPointIsInside(Point p, Point[] polygon)
+        {
+            var n = polygon.Length;
+            if (n < 3)
+            {
+                return false;
+            }
+
+            Point extreme = new Point(100000, p.Y);
+
+            int count = 0, i = 0;
+            do
+            {
+                int next = (i + 1) % n;
+
+                if (DoIntersect(polygon[i],
+                                polygon[next], p, extreme))
+                {
+                    if (Orientation(polygon[i], p, polygon[next]) == 0 && !OnSegment(polygon[i], p, polygon[next]))
+                    {
+                        i = next;
+                        continue;
+                    }
+                    count++;
+                }
+                i = next;
+            } while (i != 0);
+
+            return (count % 2 == 1);
+        }
+
+        static bool DoIntersect(Point p1, Point q1,
+                            Point p2, Point q2)
+        {
+            int o1 = Orientation(p1, q1, p2);
+            int o2 = Orientation(p1, q1, q2);
+            int o3 = Orientation(p2, q2, p1);
+            int o4 = Orientation(p2, q2, q1);
+
+            if (o1 != o2 && o3 != o4)
+            {
+                return true;
+            }
+
+            if (o1 == 0 && OnSegment(p1, p2, q1))
+            {
+                return true;
+            }
+
+            if (o2 == 0 && OnSegment(p1, q2, q1))
+            {
+                return true;
+            }
+
+            if (o3 == 0 && OnSegment(p2, p1, q2))
+            {
+                return true;
+            }
+
+            if (o4 == 0 && OnSegment(p2, q1, q2))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool OnSegment(Point p, Point q, Point r)
+        {
+            if (q.X <= Math.Max(p.X, r.X) &&
+                q.X >= Math.Min(p.X, r.X) &&
+                q.Y <= Math.Max(p.Y, r.Y) &&
+                q.Y >= Math.Min(p.Y, r.Y))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        static int Orientation(Point p, Point q, Point r)
+        {
+            int val = (q.Y - p.Y) * (r.X - q.X) -
+                      (q.X - p.X) * (r.Y - q.Y);
+
+            if (val == 0)
+            {
+                return 0;
+            }
+            return (val > 0) ? 1 : 2;
+        }
+
         public static Point[] GetRotatedRectangle(Vector2 rotationPoint, Rectangle rect, float angleRad)
         {
             var p1 = new Vector2(rect.Left, rect.Top);

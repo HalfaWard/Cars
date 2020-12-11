@@ -47,7 +47,7 @@ namespace Game.Track
                 return false;
             }
 
-            Point extreme = new Point(10000, p.Y);
+            Point extreme = new Point(100000, p.Y);
 
             int count = 0, i = 0;
             do
@@ -57,10 +57,10 @@ namespace Game.Track
                 if (DoIntersect(polygon[i],
                                 polygon[next], p, extreme))
                 {
-                    if (Orientation(polygon[i], p, polygon[next]) == 0)
+                    if (Orientation(polygon[i], p, polygon[next]) == 0 && !OnSegment(polygon[i], p, polygon[next]))
                     {
-                        return OnSegment(polygon[i], p,
-                                         polygon[next]);
+                        i = next;
+                        continue;
                     }
                     count++;
                 }
