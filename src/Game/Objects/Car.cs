@@ -15,7 +15,7 @@ namespace Game
             string name = "F1Car") : base(texture, hitbox, posistion, direction, name)
         {
             scale = new Vector2(0.1f, 0.1f);
-            origin = CenterOrigin();
+            origin = new Vector2(CenterOrigin().X - CenterOrigin().X * 0.8f, CenterOrigin().Y);
         }
 
         public override void OnCollison(StageObject collisionTarget, List<Rectangle> intersections, string hitboxName,
@@ -45,12 +45,12 @@ namespace Game
             else throw new Exception("Texture can not be null");
         }
 
-        private readonly float _friction = 0.7f;
         public bool IsMoving { get; set; }
         private bool Accelerate;
         private bool Brake;
-        private float Acceleration = 0.1f;
-        private float BreakeForce = 0.2f;
+        private readonly float _acceleration = 0.2f;
+        private readonly float _brakeForce = 0.3f;
+        private readonly float _friction = 0.98f;
         private Vector2 maxSpeed;
         private Vector2 currentSpeed;
 
@@ -60,28 +60,38 @@ namespace Game
             set => currentSpeed = value;
         }
 
-        public float Speed { get; set; } = 0f;
+        private readonly float MaxSpeed = 15;
+        public float Speed { get; set; }
         public List<Vector2> CurrentPath { get; set; }
         public float LengthOfPathMoved { get; set; }
+        
+        public float LengthDriven { get; set; }
 
         public void Move()
         {
+            // if (Player) CheckInput();
             Accelerate = false;
             Brake = false;
             if (Game1.KeyBuffer.CheckKeybindPressOrHold("up")) Accelerate = true;
             if (Game1.KeyBuffer.CheckKeybindPressOrHold("down")) Brake = true;
             if (Game1.KeyBuffer.CheckKeybindPressOrHold("left")) TurnLeft();
             if (Game1.KeyBuffer.CheckKeybindPressOrHold("right")) TurnRight();
-            if (Accelerate && Speed < 10)
-                Speed += Acceleration;
+            if (Accelerate && Speed < MaxSpeed)
+                Speed += _acceleration;
 
             if (Brake)
             {
-                Speed -= BreakeForce;
+                Speed -= _brakeForce;
                 if (Speed < 0) Speed = 0;
             }
 
+            if (!Accelerate && !Brake)
+            {
+                Speed *= _friction;
+                if (Speed < 0.1f) Speed = 0;
+            }
             CurrentSpeed = Geometry.AngleToVector(-Rotation, Speed);
+            
             Position += CurrentSpeed;
         }
 
@@ -91,14 +101,14 @@ namespace Game
         private void TurnLeft()
         {
             if(Speed == 0) return;
-            Rotation -= MathHelper.ToRadians(5);
+            Rotation -= MathHelper.ToRadians(2);
             if (Rotation > Math.PI * 2) Rotation = 0;
         }
 
         private void TurnRight()
         {
             if(Speed == 0) return;
-            Rotation += MathHelper.ToRadians(5);
+            Rotation += MathHelper.ToRadians(2);
             if (Rotation > Math.PI * 2) Rotation = 0;
         }
     }
