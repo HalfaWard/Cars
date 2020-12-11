@@ -9,11 +9,11 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Game
 {
     public class Car : Unit, IMoving
-
     {
-        public Car(Texture2D texture, Dictionary<string, Hitbox> hitbox, Vector2 posistion, Vector2 direction,
+        public Car(Texture2D texture, Dictionary<string, Hitbox> hitbox, Vector2 posistion, Vector2 direction, bool isPlayer = true, 
             string name = "F1Car") : base(texture, hitbox, posistion, direction, name)
         {
+            IsPlayer = isPlayer;
             scale = new Vector2(0.1f, 0.1f);
             origin = new Vector2(CenterOrigin().X - CenterOrigin().X * 0.8f, CenterOrigin().Y);
         }
@@ -25,10 +25,6 @@ namespace Game
                 filter = Color.Red;
             if (targetHitboxName == "inside")
                 filter = Color.White;
-        }
-
-        public override void Update(GameTime gameTime)
-        {
         }
 
         public override void Update(GameTimeHolder gameTime)
@@ -45,12 +41,13 @@ namespace Game
             else throw new Exception("Texture can not be null");
         }
 
-        public bool IsMoving { get; set; }
-        private bool Accelerate;
-        private bool Brake;
+        private bool IsPlayer;
+        private bool Accelerating;
+        private bool Braking;
         private readonly float _acceleration = 0.2f;
         private readonly float _brakeForce = 0.3f;
         private readonly float _friction = 0.98f;
+        private readonly float _maxSpeed = 15;
         private Vector2 maxSpeed;
         private Vector2 currentSpeed;
 
@@ -59,57 +56,63 @@ namespace Game
             get => currentSpeed;
             set => currentSpeed = value;
         }
-
-        private readonly float MaxSpeed = 15;
         public float Speed { get; set; }
         public List<Vector2> CurrentPath { get; set; }
-        public float LengthOfPathMoved { get; set; }
-        
         public float LengthDriven { get; set; }
 
         public void Move()
         {
-            // if (Player) CheckInput();
-            Accelerate = false;
-            Brake = false;
-            if (Game1.KeyBuffer.CheckKeybindPressOrHold("up")) Accelerate = true;
-            if (Game1.KeyBuffer.CheckKeybindPressOrHold("down")) Brake = true;
-            if (Game1.KeyBuffer.CheckKeybindPressOrHold("left")) TurnLeft();
-            if (Game1.KeyBuffer.CheckKeybindPressOrHold("right")) TurnRight();
-            if (Accelerate && Speed < MaxSpeed)
+            if (IsPlayer) CheckInput();
+            if (Accelerating && Speed < _maxSpeed)
                 Speed += _acceleration;
 
-            if (Brake)
+            if (Braking)
             {
                 Speed -= _brakeForce;
                 if (Speed < 0) Speed = 0;
             }
 
-            if (!Accelerate && !Brake)
+            if (!Accelerating && !Braking)
             {
                 Speed *= _friction;
                 if (Speed < 0.1f) Speed = 0;
             }
             CurrentSpeed = Geometry.AngleToVector(-Rotation, Speed);
-            
+            LengthDriven += CurrentSpeed.Length();
             Position += CurrentSpeed;
         }
 
-        public Vector2 Knockback { get; set; }
-        public float KnockbackFriction { get; set; }
+        private void CheckInput()
+        {
+            Accelerating = Game1.KeyBuffer.CheckKeybindPressOrHold("up");
+            Braking = Game1.KeyBuffer.CheckKeybindPressOrHold("down");
+            if (Game1.KeyBuffer.CheckKeybindPressOrHold("left")) TurnLeft();
+            if (Game1.KeyBuffer.CheckKeybindPressOrHold("right")) TurnRight();
+        }
 
-        private void TurnLeft()
+        public void ToggleAccelerate() => Accelerating = !Accelerating;
+        public void ToggleBrake() => Braking = !Braking;
+
+        public void TurnLeft()
         {
             if(Speed == 0) return;
             Rotation -= MathHelper.ToRadians(2);
             if (Rotation > Math.PI * 2) Rotation = 0;
         }
 
-        private void TurnRight()
+        public void TurnRight()
         {
             if(Speed == 0) return;
             Rotation += MathHelper.ToRadians(2);
             if (Rotation > Math.PI * 2) Rotation = 0;
         }
+
+        #region Inherited values we do not need
+        public override void Update(GameTime gameTime) { } // Leave empty
+        public float LengthOfPathMoved { get; set; }
+        public bool IsMoving { get; set; }
+        public Vector2 Knockback { get; set; }
+        public float KnockbackFriction { get; set; }
+        #endregion
     }
 }
