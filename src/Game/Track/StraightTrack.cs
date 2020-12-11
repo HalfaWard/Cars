@@ -10,7 +10,7 @@ namespace Game.Track
     public class StraightTrack : StageObject
     {
 
-        public StraightTrack(Vector2 start, int length, int width, int degreeAngle) : base(GetLineTexture(length, width), null, start, new Vector2(width / 2, length))
+        public StraightTrack(Vector2 start, int length, int width, int degreeAngle) : base(GetLineTexture(length, width), null, start, new Vector2(), new Vector2(width / 2, length))
         {
             Rotation = (float)Geometry.DegreesToRadians(degreeAngle);
         }
@@ -40,7 +40,7 @@ namespace Game.Track
 
         public bool CheckIfPointIsInside(Point p)
         {
-            var polygon = Geometry.GetRotatedRectangle(CenterPosition(), Rectangle(), Rotation);
+            var polygon = Geometry.GetRotatedRectangle(Position, Rectangle(), Rotation);
             var n = polygon.Length;
             if (n < 3)
             {
@@ -133,27 +133,53 @@ namespace Game.Track
         private static Texture2D GetLineTexture(int length, int width)
         {
             var texture = new Texture2D(Game1.Instance.GraphicsDevice, width, length);
-            var colorData = new Color[width * length];
-
-            for (var x = 0; x < width; x++)
+            Color[] colors = new Color[texture.Width * texture.Height];
+            var borderWidth = 1;
+            
+            for (int x = 0; x < texture.Width; x++)
             {
-                for (var y = 0; y < length; y++)
+                for (int y = 0; y < texture.Height; y++)
                 {
-                    var index = x * width + y;
-                    
-                    if (y == 0 || y == length -1)
+                    bool colored = false;
+                    for (int i = 0; i <= borderWidth; i++)
                     {
-                        colorData[index] = Color.White;
+                        if (x == i || y == i || x == texture.Width - 1 - i || y == texture.Height - 1 - i)
+                        {
+                            colors[x + y * texture.Width] = Color.White;
+                            colored = true;
+                            break;
+                        }
                     }
-                    else
-                    {
-                        colorData[index] = Color.Transparent;
-                    }
+
+                    if (colored == false)
+                        colors[x + y * texture.Width] = Color.Transparent;
                 }
             }
 
-            texture.SetData(colorData);
+            texture.SetData(colors);
             return texture;
+            //var texture = new Texture2D(Game1.Instance.GraphicsDevice, width, length);
+            //var colorData = new Color[width * length];
+
+            //for (var x = 0; x < width; x++)
+            //{
+            //    for (var y = 0; y < length; y++)
+            //    {
+            //        var index = x * width + y;
+
+            //        if (y == 0 || y == length -1)
+            //        {
+            //            colorData[index] = Color.White;
+            //        }
+            //        else
+            //        {
+            //            colorData[index] = Color.Transparent;
+            //        }
+            //    }
+            //}
+
+            //texture.SetData(colorData);
+            //return texture;
         }
     }
 }

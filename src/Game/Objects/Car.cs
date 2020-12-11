@@ -15,13 +15,17 @@ namespace Game
         public Car(Texture2D texture, Dictionary<string, Hitbox> hitbox, Vector2 posistion, Vector2 direction,
             string name = "F1Car") : base(texture, hitbox, posistion, direction, name)
         {
-            scale = new Vector2(0.2f, 0.2f);
+            scale = new Vector2(0.1f, 0.1f);
             origin = CenterOrigin();
         }
 
         public override void OnCollison(StageObject collisionTarget, List<Rectangle> intersections, string hitboxName,
             string targetHitboxName)
         {
+            if(targetHitboxName == "outside")
+                filter = Color.Red;
+            if (targetHitboxName == "inside")
+                filter = Color.White;
         }
 
         public override void Update(GameTime gameTime)

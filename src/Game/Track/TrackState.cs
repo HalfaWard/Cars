@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Engine.Functionality;
 using Engine.GameStates;
 using Engine.Objects;
@@ -16,6 +17,7 @@ namespace Game.Track
         public static OverlayManager OverlayManager { get; } = new OverlayManager();
 
         private Car _car;
+        private StraightTrack _straightTrack;
         private Camera _camera;
         
         public override void OnCreate()
@@ -34,12 +36,26 @@ namespace Game.Track
                 {
                     {"default", new Hitbox(new List<Rectangle> {new Rectangle(0, 0, 100, 000)}, Vector2.Zero)}
                 },
-                new Vector2(100, 100),
+                new Vector2(650, 380),
                 new Vector2(0, 0)
             );
+            _straightTrack = new StraightTrack(new Vector2(500, 500), 400, 200, 90);
+
             objectHandler.AddObjectToList("car", _car);
-            var updates = new []{"car"};
+            objectHandler.AddObjectToList("straightTrack", _straightTrack);
+            var updates = new []{"car", "straightTrack" };
             objectHandler.AddObjectToUpdate(updates);
+
+            objectHandler.AddCollisionHandler("car", "straightTrack", "", "outside", false, (obj, tar) =>
+            {
+                var carPoints = Geometry.GetRotatedRectangle(obj.Position, obj.Rectangle(), obj.Rotation);
+                return carPoints.Any(p => !((StraightTrack)tar).CheckIfPointIsInside(p));
+            });
+            objectHandler.AddCollisionHandler("car", "straightTrack", "", "inside", false, (obj, tar) =>
+            {
+                var carPoints = Geometry.GetRotatedRectangle(obj.Position, obj.Rectangle(), obj.Rotation);
+                return carPoints.All(p => ((StraightTrack)tar).CheckIfPointIsInside(p));
+            });
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -62,6 +78,7 @@ namespace Game.Track
         {
             // Update objects, camera, transform
             objectHandler.Update(gameTime);
+            objectHandler.CheckCollisions();
         }
 
         public override void OnExit()
