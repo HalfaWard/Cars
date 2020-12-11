@@ -302,7 +302,7 @@
             return radians;
         }
 
-        public bool CheckIfPointIsInside(Point p, Point[] polygon)
+        public static bool CheckIfPointIsInside(Point p, Point[] polygon)
         {
             var n = polygon.Length;
             if (n < 3)
