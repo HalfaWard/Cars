@@ -416,7 +416,7 @@
             };
         }
 
-        public static Vector2 ClosesPointOnPolygonFromPoint(Vector2 point, Point[] vertices)
+        public static Vector2 ClosestPointOnPolygonFromPoint(Vector2 point, Point[] vertices)
         {
             float distance = 0;
             var closesPoint = new Vector2();

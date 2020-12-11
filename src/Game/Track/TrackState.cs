@@ -98,6 +98,18 @@ namespace Game.Track
             // Update objects, camera, transform
             objectHandler.Update(gameTime);
             objectHandler.CheckCollisions();
+            var carPolygon = Geometry.GetRotatedRectangle(_car.Position, _car.Rectangle(), _car.Rotation);
+            var carState = "inside";
+            foreach(var point in carPolygon)
+            {
+                if(!Geometry.CheckIfPointIsInside(point, outerTrack) || Geometry.CheckIfPointIsInside(point, innerTrack))
+                {
+                    carState = "outside";
+                    break;
+                }
+            }
+            _car.OnCollison(null, null, null, carState);
+
         }
 
         public override void OnExit()
