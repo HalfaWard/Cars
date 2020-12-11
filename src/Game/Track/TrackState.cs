@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Engine.Functionality;
 using Engine.GameStates;
 using Engine.Overlay;
@@ -18,11 +20,15 @@ namespace Game.Track
         private bool followCar;
 
         private Texture2D trackTexture;
-        Point[] innerTrack =
-            {new Point(200, 200), new Point(800, 200), new Point(800, 600), new Point(200, 600)};
 
-        Point[] outerTrack =
-            {new Point(50, 50), new Point(1000, 50), new Point(1000, 750), new Point(50, 750)};
+        private int[] outerX = {0300, 1700, 1825, 1900, 1900, 1825, 1700, 0300, 0175, 0100, 0100, 0175};
+        private int[] outerY = {0100, 0100, 0175, 0300, 0900, 1025, 1100, 1100, 1025, 0900, 0300, 0175};
+        
+        private int[] innerX = {0500, 1500, 1625, 1700, 1700, 1625, 1500, 0500, 0425, 0300, 0300, 0375};
+        private int[] innerY = {0300, 0300, 0375, 0500, 0900, 0975, 1100, 1100, 0975, 0900, 0500, 0375};
+        
+        private Point[] innerTrack;
+        private Point[] outerTrack; 
 
         public override void OnCreate()
         {
@@ -38,7 +44,7 @@ namespace Game.Track
             var carTexture = content.Load<Texture2D>("F1Car");
             _car = new Car(carTexture,
                 null,
-                new Vector2(100, 100),
+                new Vector2(200, 200),
                 new Vector2(0, 0)
             );
             objectHandler.AddObjectToList("car", _car);
@@ -60,6 +66,11 @@ namespace Game.Track
 
         private Texture2D PaintTrack()
         {
+            if (innerX.Length != innerY.Length) throw new Exception();
+            if (outerX.Length != outerY.Length) throw new Exception();
+            innerTrack = innerX.Zip(innerY, (x, y) => new Point(x, y)).ToArray();
+            outerTrack = outerX.Zip(outerY, (x, y) => new Point(x, y)).ToArray();
+            
             var texture = new Texture2D(Game1.Instance.GraphicsDevice, Game1.Instance.Graphics.PreferredBackBufferWidth,
                 Game1.Instance.Graphics.PreferredBackBufferHeight);
             var colorArray = new Color[texture.Height * texture.Width];

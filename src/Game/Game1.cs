@@ -46,7 +46,7 @@ namespace Game
         private void UpdateScreenResolution()
         {
             Graphics.PreferredBackBufferHeight = 1200;
-            Graphics.PreferredBackBufferWidth = 1800;
+            Graphics.PreferredBackBufferWidth = 2000;
             Graphics.ApplyChanges();
         }
 
