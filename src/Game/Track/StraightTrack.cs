@@ -158,28 +158,6 @@ namespace Game.Track
 
             texture.SetData(colors);
             return texture;
-            //var texture = new Texture2D(Game1.Instance.GraphicsDevice, width, length);
-            //var colorData = new Color[width * length];
-
-            //for (var x = 0; x < width; x++)
-            //{
-            //    for (var y = 0; y < length; y++)
-            //    {
-            //        var index = x * width + y;
-
-            //        if (y == 0 || y == length -1)
-            //        {
-            //            colorData[index] = Color.White;
-            //        }
-            //        else
-            //        {
-            //            colorData[index] = Color.Transparent;
-            //        }
-            //    }
-            //}
-
-            //texture.SetData(colorData);
-            //return texture;
         }
     }
 }

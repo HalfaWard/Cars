@@ -325,6 +325,27 @@
             };
         }
 
+        public static Vector2 ClosesPointOnPolygonFromPoint(Vector2 point, Point[] vertices)
+        {
+            float distance = 0;
+            var closesPoint = new Vector2();
+            for(var i = 0; i < vertices.Length; i++)
+            { 
+                var p1 = vertices[i];
+                var p2 = i == vertices.Length - 1 ? vertices[0] : vertices[i + 1];
+                float lengthSqr = (p2 - p1).ToVector2().LengthSquared();
+                float t = Math.Max(0, Math.Min(1, Vector2.Dot(point - p1.ToVector2(), p2.ToVector2() - p1.ToVector2()) / lengthSqr));
+                Vector2 projection = p1.ToVector2() + t * (p2.ToVector2() - p1.ToVector2());
+                var d = (point - projection).Length();
+                if (distance == 0 || d < distance)
+                {
+                    distance = d;
+                    closesPoint = projection;
+                }
+            }
+            return closesPoint;
+        }
+
         /// <summary>
         /// Converts a radian angle to a vector
         /// </summary>

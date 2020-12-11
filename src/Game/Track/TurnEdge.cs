@@ -2,15 +2,20 @@
 using Engine.Objects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace Game.Track
 {
     public class TurnEdge : StageObject
     {
+        public int DegreesFrom;
+        public int DegreesTo;
         public TurnEdge(Vector2 center, int radius, int degreesFrom, int degreesTo) : base(GetCircleTexture(radius*2, degreesFrom, degreesTo), null, center, new Vector2())
         {
             origin = CenterOrigin();
+            DegreesFrom = degreesFrom;
+            DegreesTo = degreesTo;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -47,10 +52,10 @@ namespace Game.Track
             {
                 for (var y = 0; y < diam; y++)
                 {
-                    var index = x * diam + y;
+                    var index = y * diam + x;
                     var pos = new Vector2(x - radius, y - radius);
                     var angle = Geometry.RadiansToDegrees(Geometry.AngleOfVector(pos));
-                    if (pos.Length() == radius && ((angle >= degreesFrom && angle <= degreesTo) || (degreesTo < degreesFrom && (angle >= degreesFrom || angle <= degreesTo )))) // Don't ask
+                    if (pos.Length() - radius < 1  && pos.Length() - radius > -1 && ((angle >= degreesFrom && angle <= degreesTo) || (degreesTo < degreesFrom && (angle >= degreesFrom || angle <= degreesTo )))) // Don't ask
                     {
                         colorData[index] = Color.White;
                     }

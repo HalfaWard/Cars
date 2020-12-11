@@ -92,7 +92,7 @@
         /// <summary>
         /// Defines the isColliding
         /// </summary>
-        internal bool isColliding = false;
+        public bool isColliding = false;
 
         /// <summary>
         /// Gets or sets the Rotation

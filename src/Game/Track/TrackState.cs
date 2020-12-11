@@ -17,7 +17,6 @@ namespace Game.Track
         public static OverlayManager OverlayManager { get; } = new OverlayManager();
 
         private Car _car;
-        private StraightTrack _straightTrack;
         private Camera _camera;
         
         public override void OnCreate()
@@ -39,11 +38,17 @@ namespace Game.Track
                 new Vector2(650, 380),
                 new Vector2(0, 0)
             );
-            _straightTrack = new StraightTrack(new Vector2(500, 500), 400, 200, 90);
+            var straightTrack1 = new StraightTrack(new Vector2(50, 150), 600, 200, 90);
+            var turnEdge1 = new TurnEdge(new Vector2(650, 350), 100, 330, 90);
+            var turnEdge2 = new TurnEdge(new Vector2(650, 350), 300, 330, 90);
 
             objectHandler.AddObjectToList("car", _car);
-            objectHandler.AddObjectToList("straightTrack", _straightTrack);
-            var updates = new []{"car", "straightTrack" };
+            objectHandler.AddObjectToList("straightTrack", straightTrack1);
+            objectHandler.AddObjectToList("innerTurnEdge", turnEdge1);
+            objectHandler.AddObjectToList("outerTurnEdge", turnEdge2);
+
+
+            var updates = new []{"car"};
             objectHandler.AddObjectToUpdate(updates);
 
             objectHandler.AddCollisionHandler("car", "straightTrack", "", "outside", false, (obj, tar) =>
@@ -55,6 +60,16 @@ namespace Game.Track
             {
                 var carPoints = Geometry.GetRotatedRectangle(obj.Position, obj.Rectangle(), obj.Rotation);
                 return carPoints.All(p => ((StraightTrack)tar).CheckIfPointIsInside(p));
+            });
+            objectHandler.AddCollisionHandler("car", "innerTurnEdge", "", "outside", false, (obj, tar) =>
+            {
+                var carPoints = Geometry.GetRotatedRectangle(obj.Position, obj.Rectangle(), obj.Rotation);
+                var closesPoint = Geometry.ClosesPointOnPolygonFromPoint(tar.Position, carPoints);
+                var distance = (tar.Position - closesPoint).Length();
+                var distanceAngle = Geometry.RadiansToDegrees(Geometry.AngleOfVector(closesPoint - tar.Position));
+                var degreesFrom = ((TurnEdge)tar).DegreesFrom;
+                var degreesTo = ((TurnEdge)tar).DegreesTo;
+                return distance <= tar.Width / 2 && ((distanceAngle >= degreesFrom && distanceAngle <= degreesTo) || (degreesTo < degreesFrom && (distanceAngle >= degreesFrom || distanceAngle <= degreesTo))); 
             });
         }
 
