@@ -15,6 +15,7 @@ namespace Game.Track
 
         private Car _car;
         private Camera _camera;
+        private bool followCar;
 
         private Texture2D trackTexture;
         Point[] innerTrack =
@@ -96,6 +97,18 @@ namespace Game.Track
         public override void Update(GameTimeHolder gameTime)
         {
             // Update objects, camera, transform
+            if (Game1.KeyBuffer.CheckKeybindPress("space"))
+                followCar = !followCar;
+
+            if (followCar)
+            {
+                _camera.Follow(_car, Game1.Instance.Graphics.PreferredBackBufferWidth, Game1.Instance.Graphics.PreferredBackBufferHeight);
+                Transform = _camera.Transform;
+                HasTransform = true;
+            }
+            else
+                HasTransform = false;
+
             objectHandler.Update(gameTime);
             objectHandler.CheckCollisions();
             var carPolygon = Geometry.GetRotatedRectangle(_car.Position, _car.Rectangle(), _car.Rotation);
@@ -109,7 +122,6 @@ namespace Game.Track
                 }
             }
             _car.OnCollison(null, null, null, carState);
-
         }
 
         public override void OnExit()

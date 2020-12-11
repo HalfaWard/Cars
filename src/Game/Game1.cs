@@ -28,7 +28,7 @@ namespace Game
         {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            KeyBuffer = new KeyBuffer(false, 10);
+            KeyBuffer = new KeyBuffer(false, 100);
         }
 
         protected override void Initialize()
