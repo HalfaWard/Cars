@@ -311,7 +311,6 @@
             }
 
             Point extreme = new Point(100000, p.Y);
-
             int count = 0, i = 0;
             do
             {
@@ -320,6 +319,18 @@
                 if (DoIntersect(polygon[i],
                                 polygon[next], p, extreme))
                 {
+                    if (OnSegment(p, polygon[i], extreme) || OnSegment(p, polygon[next], extreme))
+                    {
+                        if(next == 0)
+                        {
+                            i = next;
+                            continue;
+                        }
+                        else
+                        {
+                            next = (i + 2) % n;
+                        }
+                    }
                     if (Orientation(polygon[i], p, polygon[next]) == 0 && !OnSegment(polygon[i], p, polygon[next]))
                     {
                         i = next;
@@ -416,7 +427,7 @@
             };
         }
 
-        public static Vector2 ClosestPointOnPolygonFromPoint(Vector2 point, Point[] vertices)
+        public static Vector2 ClosesPointOnPolygonFromPoint(Vector2 point, Point[] vertices)
         {
             float distance = 0;
             var closesPoint = new Vector2();

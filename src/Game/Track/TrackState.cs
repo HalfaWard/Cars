@@ -79,6 +79,10 @@ namespace Game.Track
                 for (int y = 0; y < texture.Height; y++)
                 {
                     var index = y * texture.Width + x;
+                    if (x == 200 && y == 300)
+                    {
+                        var a = 1;
+                    }
                     if (Geometry.CheckIfPointIsInside(new Point(x, y), outerTrack) &&
                         !Geometry.CheckIfPointIsInside(new Point(x, y), innerTrack))
                     {
@@ -88,6 +92,7 @@ namespace Game.Track
                     {
                         colorArray[index] = Color.Transparent;
                     }
+                    
                 }
             }
 
